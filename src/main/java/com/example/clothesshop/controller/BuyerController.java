@@ -3,6 +3,12 @@ package com.example.clothesshop.controller;
 import com.example.clothesshop.dto.BuyerDto;
 import com.example.clothesshop.dto.CreateBuyerDto;
 import com.example.clothesshop.service.impl.BuyerServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +23,15 @@ import java.util.List;
 public class BuyerController {
     private final BuyerServiceImpl service;
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201",
+                    description = "Buyer was created successfully",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CreateBuyerDto.class))}),
+            @ApiResponse(responseCode = "401",
+                    description = "Failed to add buyer to database")
+    })
+    @Operation(summary = "This road creates buyer")
     @PostMapping
     public ResponseEntity<CreateBuyerDto> create(CreateBuyerDto newBuyer){
         try {
@@ -26,6 +41,15 @@ public class BuyerController {
         }
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Buyer found successfully",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = BuyerDto.class))}),
+            @ApiResponse(responseCode = "404",
+                    description = "Failed to find buyer")
+    })
+    @Operation(summary = "This road finds buyer by id")
     @GetMapping("/{id}")
     public ResponseEntity<BuyerDto> findById(@PathVariable Long id){
         try{
@@ -36,6 +60,15 @@ public class BuyerController {
 
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Buyers were found successfully",
+                    content = {@Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = BuyerDto.class)))}),
+            @ApiResponse(responseCode = "404",
+                    description = "Failed to find any buyers")
+    })
+    @Operation(summary = "This road shows all users in database")
     @GetMapping
     public ResponseEntity<List<BuyerDto>> findAll(){
         List<BuyerDto> buyerDtoList = service.findAll();
@@ -46,6 +79,13 @@ public class BuyerController {
         }
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Buyer was deleted successfully"),
+            @ApiResponse(responseCode = "404",
+                    description = "Failed to delete buyer from database")
+    })
+    @Operation(summary = "This road deletes buyer")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
         try{

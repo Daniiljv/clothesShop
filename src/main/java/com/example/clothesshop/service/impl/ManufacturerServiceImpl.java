@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -32,7 +33,8 @@ public class ManufacturerServiceImpl implements ManufacturerService {
         try {
             repo.save(manufacturer);
         } catch (Exception e) {
-            log.error(e.getStackTrace().toString());
+            log.error(Arrays.toString(e.getStackTrace()));
+            throw new RuntimeException();
         }
         return manufacturerDto;
     }
@@ -42,14 +44,12 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 
             Manufacturer manufacturer = repo.findByDeleteDateIsNullAndId(id);
 
-            ManufacturerDto manufacturerDto = ManufacturerDto.builder()
+        return ManufacturerDto.builder()
                     .id(manufacturer.getId())
                     .name(manufacturer.getName())
                     .address(manufacturer.getAddress())
                     .contactInfo(manufacturer.getContactInfo())
                     .build();
-
-            return manufacturerDto;
         }
 
         @Override
