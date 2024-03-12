@@ -4,6 +4,7 @@ import com.example.clothesshop.dto.CreateProductDto;
 import com.example.clothesshop.dto.FindProductByBodyDto;
 import com.example.clothesshop.dto.ProductDto;
 import com.example.clothesshop.entity.Product;
+import com.example.clothesshop.mapper.ProductMapper;
 import com.example.clothesshop.repo.ProductRepo;
 import com.example.clothesshop.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,21 +21,13 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepo repo;
+    private final ProductMapper productMapper;
 
     @Override
     public CreateProductDto createProduct(CreateProductDto productDto) {
 
-        Product productToSave = Product.builder()
-                .name(productDto.getName())
-                .description(productDto.getDescription())
-                .manufacturer(productDto.getManufacturer())
-                .price(productDto.getPrice())
-                .size(productDto.getSize())
-                .color(productDto.getColor())
-                .build();
-
         try {
-            repo.save(productToSave);
+            repo.save(productMapper.toEntity(productDto));
         } catch (Exception e) {
             log.error(Arrays.toString(e.getStackTrace()));
         }
@@ -45,40 +37,13 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto findById(Long id) {
         Product product = repo.findByDeleteDateIsNullAndId(id);
-
-        return ProductDto.builder()
-                    .id(product.getId())
-                    .name(product.getName())
-                    .description(product.getDescription())
-                    .manufacturer(product.getManufacturer())
-                    .price(product.getPrice())
-                    .size(product.getSize())
-                    .color(product.getColor())
-                    .inStock(product.getInStock())
-                    .build();
+        return productMapper.toDto(product);
     }
 
     @Override
     public List<ProductDto> getAllProducts() {
         List<Product> products = repo.findAllByDeleteDateIsNull();
-
-        List<ProductDto> productsDto = new ArrayList<>();
-
-        for (Product product : products) {
-
-            ProductDto productDto = ProductDto.builder()
-                    .id(product.getId())
-                    .name(product.getName())
-                    .description(product.getDescription())
-                    .manufacturer(product.getManufacturer())
-                    .price(product.getPrice())
-                    .size(product.getSize())
-                    .color(product.getColor())
-                    .build();
-
-            productsDto.add(productDto);
-        }
-        return productsDto;
+        return productMapper.toDtoList(products);
     }
 
     @Override
@@ -97,65 +62,22 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDto> findAllByManufacturerId(Long id) {
         List<Product> products = repo.findAllByDeleteDateIsNullAndManufacturerId(id);
-
-        List<ProductDto> productDtoList = new ArrayList<>();
-
-        for(Product product : products){
-            ProductDto productDto = ProductDto.builder()
-                    .id(product.getId())
-                    .name(product.getName())
-                    .description(product.getDescription())
-                    .manufacturer(product.getManufacturer())
-                    .price(product.getPrice())
-                    .size(product.getSize())
-                    .color(product.getColor())
-                    .build();
-            productDtoList.add(productDto);
-        }
-        return productDtoList;
+        return productMapper.toDtoList(products);
     }
 
     @Override
     public List<ProductDto> findProductsByColor(String color) {
         List<Product> products = repo.findProductsByColor(color);
-
-        List<ProductDto> productDtoList = new ArrayList<>();
-
-        for(Product product : products){
-            ProductDto productDto = ProductDto.builder()
-                    .id(product.getId())
-                    .name(product.getName())
-                    .description(product.getDescription())
-                    .manufacturer(product.getManufacturer())
-                    .price(product.getPrice())
-                    .size(product.getSize())
-                    .color(product.getColor())
-                    .build();
-            productDtoList.add(productDto);
-        }
-        return productDtoList;
+        return productMapper.toDtoList(products);
     }
+
+
 
     public List<ProductDto> findByBody(FindProductByBodyDto productToFind){
         List<Product> products = repo.findByBody(productToFind.getPrices(),
                                                  productToFind.getColors(),
                                                  productToFind.getManufacturers());
-
-        List<ProductDto> productDtoList = new ArrayList<>();
-
-        for(Product product : products){
-            ProductDto productDto = ProductDto.builder()
-                    .id(product.getId())
-                    .name(product.getName())
-                    .description(product.getDescription())
-                    .manufacturer(product.getManufacturer())
-                    .price(product.getPrice())
-                    .size(product.getSize())
-                    .color(product.getColor())
-                    .build();
-            productDtoList.add(productDto);
-        }
-        return productDtoList;
+        return productMapper.toDtoList(products);
     }
 
     @Override

@@ -13,7 +13,6 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
     List<Product> findAllByDeleteDateIsNull();
 
     List<Product> findAllByDeleteDateIsNullAndManufacturerId(Long id);
-
     @Query("SELECT p FROM Product p WHERE p.color = :color")
     List<Product> findProductsByColor(@Param("color") String color);
 

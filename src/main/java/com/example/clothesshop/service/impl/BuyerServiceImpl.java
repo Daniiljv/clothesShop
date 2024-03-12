@@ -3,6 +3,7 @@ package com.example.clothesshop.service.impl;
 import com.example.clothesshop.dto.BuyerDto;
 import com.example.clothesshop.dto.CreateBuyerDto;
 import com.example.clothesshop.entity.Buyer;
+import com.example.clothesshop.mapper.BuyerMapper;
 import com.example.clothesshop.repo.BuyerRepo;
 import com.example.clothesshop.service.BuyerService;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,42 +20,25 @@ import java.util.List;
 @Slf4j
 public class BuyerServiceImpl implements BuyerService {
     private final BuyerRepo repo;
+    private final BuyerMapper buyerMapper;
     @Override
     public BuyerDto findById(Long id) {
 
         Buyer buyer = repo.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("Buyer with id " + id + " is not found"));
-        return BuyerDto.builder()
-                .id(buyer.getId())
-                .name(buyer.getName())
-                .surname(buyer.getSurname())
-                .build();
+        return buyerMapper.toDto(buyer);
     }
 
     @Override
     public List<BuyerDto> findAll() {
         List<Buyer> buyerList = repo.findAll();
-        List<BuyerDto> buyerDtoList = new ArrayList<>();
-
-        for(Buyer buyer : buyerList){
-            BuyerDto buyerDto = BuyerDto.builder()
-                    .id(buyer.getId())
-                    .name(buyer.getName())
-                    .surname(buyer.getSurname())
-                    .build();
-            buyerDtoList.add(buyerDto);
-        }
-        return buyerDtoList;
+return buyerMapper.toBuyerDtoList(buyerList);
     }
 
     @Override
     public CreateBuyerDto create(CreateBuyerDto newBuyer) {
-        Buyer buyer = Buyer.builder()
-                .name(newBuyer.getName())
-                .surname(newBuyer.getSurname())
-                .build();
         try{
-            repo.save(buyer);
+            repo.save(buyerMapper.toEntity(newBuyer));
         }catch (Exception e){
             log.error(Arrays.toString(e.getStackTrace()));
             throw new RuntimeException();

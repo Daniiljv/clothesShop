@@ -3,6 +3,7 @@ package com.example.clothesshop.service.impl;
 import com.example.clothesshop.dto.CreateManufacturerDto;
 import com.example.clothesshop.dto.ManufacturerDto;
 import com.example.clothesshop.entity.Manufacturer;
+import com.example.clothesshop.mapper.ManufacturerMapper;
 import com.example.clothesshop.repo.ManufacturerRepo;
 import com.example.clothesshop.service.ManufacturerService;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +22,13 @@ import java.util.List;
 public class ManufacturerServiceImpl implements ManufacturerService {
 
     private final ManufacturerRepo repo;
+    private final ManufacturerMapper manufacturerMapper;
 
     @Override
     public CreateManufacturerDto createManufacturer(CreateManufacturerDto manufacturerDto) {
 
-        Manufacturer manufacturer = Manufacturer.builder()
-                .name(manufacturerDto.getName())
-                .contactInfo(manufacturerDto.getContactInfo())
-                .address(manufacturerDto.getAddress())
-                .build();
         try {
-            repo.save(manufacturer);
+            repo.save(manufacturerMapper.toEntity(manufacturerDto));
         } catch (Exception e) {
             log.error(Arrays.toString(e.getStackTrace()));
             throw new RuntimeException();
@@ -44,33 +41,14 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 
             Manufacturer manufacturer = repo.findByDeleteDateIsNullAndId(id);
 
-        return ManufacturerDto.builder()
-                    .id(manufacturer.getId())
-                    .name(manufacturer.getName())
-                    .address(manufacturer.getAddress())
-                    .contactInfo(manufacturer.getContactInfo())
-                    .build();
+        return manufacturerMapper.toDto(manufacturer);
         }
 
         @Override
         public List<ManufacturerDto> getAllManufacturer () {
 
             List<Manufacturer> manufacturers = repo.findAllByDeleteDateIsNull();
-
-            List<ManufacturerDto> manufacturerDtoList = new ArrayList<>();
-
-            for (Manufacturer manufacturer : manufacturers) {
-
-                ManufacturerDto manufacturerDto = ManufacturerDto.builder()
-                        .id(manufacturer.getId())
-                        .name(manufacturer.getName())
-                        .address(manufacturer.getAddress())
-                        .contactInfo(manufacturer.getContactInfo())
-                        .build();
-                manufacturerDtoList.add(manufacturerDto);
-            }
-
-            return manufacturerDtoList;
+            return manufacturerMapper.toManufacturerDtoList(manufacturers);
         }
 
         @Override

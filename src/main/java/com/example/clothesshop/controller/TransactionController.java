@@ -40,7 +40,7 @@ public class TransactionController {
         try {
             return new ResponseEntity<>(service.createTransaction(transactionDto), HttpStatus.OK);
         }catch (IllegalArgumentException i){
-            return new ResponseEntity<>("There is no enough product in stock",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("There is no enough product in stock", HttpStatus.BAD_REQUEST);
         }
     }
 

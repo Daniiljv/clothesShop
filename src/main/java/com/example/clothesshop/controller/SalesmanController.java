@@ -1,6 +1,7 @@
 package com.example.clothesshop.controller;
 
 import com.example.clothesshop.dto.CreateSalesmanDto;
+import com.example.clothesshop.dto.ManufacturerDto;
 import com.example.clothesshop.dto.SalesmanDto;
 import com.example.clothesshop.service.impl.SalesmanServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +21,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
-@RequestMapping("api/salesmen/")
+@RequestMapping("api/salesmen")
 public class SalesmanController {
 
     private final SalesmanServiceImpl service;
@@ -35,12 +36,11 @@ public class SalesmanController {
     })
     @Operation(summary = "This road creates salesman")
     @PostMapping("create")
-    public ResponseEntity<CreateSalesmanDto> create(CreateSalesmanDto salesmanDto){
+    public ResponseEntity<CreateSalesmanDto> create(CreateSalesmanDto salesmanDto) {
         CreateSalesmanDto salesmanToCreate = service.createSalesman(salesmanDto);
-        if(salesmanToCreate != null){
+        if (salesmanToCreate != null) {
             return new ResponseEntity<>(salesmanToCreate, HttpStatus.CREATED);
-        }
-        else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
     }
 
@@ -54,16 +54,49 @@ public class SalesmanController {
     })
     @Operation(summary = "This road finds salesman by id")
     @GetMapping("getById/{id}")
-    public ResponseEntity<SalesmanDto> getById(@PathVariable Long id){
+    public ResponseEntity<SalesmanDto> getById(@PathVariable Long id) {
         SalesmanDto salesman = service.getById(id);
-        if(salesman != null){
+        if (salesman != null) {
             return new ResponseEntity<>(salesman, HttpStatus.OK);
-        }
-        else {
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
+    @GetMapping("/productCountBySalesman/{salesmanId}")
+    public ResponseEntity<Long> getCountOfSalesmanProducts(@PathVariable Long salesmanId) {
+        Long count = service.getCountOfSalesmanProducts(salesmanId);
+        return new ResponseEntity<>(count, HttpStatus.OK);
+    }
+
+    @GetMapping("/getAvgPriceOfSalesmanProducts/{salesmanId}")
+    public ResponseEntity<Double> avgPriceOfSalesmanProducts(@PathVariable Long salesmanId) {
+        Double result = service.avgPriceOfSalesmanProducts(salesmanId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/getSalesmanBudget/{salesmanId}")
+    public ResponseEntity<Double> getSalesmanBudget(@PathVariable Long salesmanId) {
+        Double result = service.getSalesmanBudget(salesmanId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/getSalesmanPricesWithDiscount/{salesmanId}")
+    public ResponseEntity<List<Integer>> getSalesmanPricesWithDiscount(@PathVariable Long salesmanId) {
+        List<Integer> result = service.getSalesmanPricesWithDiscount(salesmanId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+@GetMapping("/newSalesmanProductsNames/{salesmanId}")
+    public ResponseEntity<List<String>> newSalesmanProductsNames(@PathVariable Long salesmanId){
+        List<String> result = service.newSalesmanProductsNames(salesmanId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/getSalesmanManufacturers/{salesmanId}")
+    public ResponseEntity<List<ManufacturerDto>> getSalesmanManufacturers(@PathVariable Long salesmanId){
+        List<ManufacturerDto> result = service.getSalesmanManufacturers(salesmanId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Salesmen were found successfully",
@@ -74,15 +107,15 @@ public class SalesmanController {
     })
     @Operation(summary = "This road shows all salesmen in database")
     @GetMapping("getAll")
-    public ResponseEntity<List<SalesmanDto>> getAll(){
+    public ResponseEntity<List<SalesmanDto>> getAll() {
         List<SalesmanDto> salesmanDtoList = service.getAll();
-        if(!salesmanDtoList.isEmpty()){
+        if (!salesmanDtoList.isEmpty()) {
             return new ResponseEntity<>(salesmanDtoList, HttpStatus.OK);
-        }
-        else{
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Salesman was deleted successfully"),
@@ -91,11 +124,10 @@ public class SalesmanController {
     })
     @Operation(summary = "This road deletes salesman")
     @DeleteMapping("delete")
-    public ResponseEntity<Boolean> delete(@RequestParam Long id){
+    public ResponseEntity<Boolean> delete(@RequestParam Long id) {
 
-        if(service.deleteById(id)){
+        if (service.deleteById(id)) {
             return new ResponseEntity<>(true, HttpStatus.OK);
-        }
-        else return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+        } else return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 }

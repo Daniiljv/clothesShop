@@ -76,7 +76,7 @@ public class ProductController {
     })
 
     @Operation(summary = "This road returns all products")
-    @GetMapping("getAll")
+    @GetMapping()
     public ResponseEntity<List<ProductDto>> getAll() {
         List<ProductDto> productDtoList = service.getAllProducts();
         if (!productDtoList.isEmpty()) {
@@ -96,7 +96,7 @@ public class ProductController {
     })
 
     @Operation(summary = "This road returns product manufacturer id")
-    @GetMapping("findAllByManufacturerId/{id}")
+    @GetMapping("/findAllByManufacturerId/{id}")
     public ResponseEntity<List<ProductDto>> findAllByManufacturerId(@PathVariable Long id) {
         List<ProductDto> products = service.findAllByManufacturerId(id);
 
@@ -117,7 +117,7 @@ public class ProductController {
     })
 
     @Operation(summary = "This road returns product with specific color")
-    @GetMapping("findProductsByColor")
+    @GetMapping("/findProductsByColor")
     public ResponseEntity<List<ProductDto>> findProductsByColor(@RequestParam String color) {
         List<ProductDto> products = service.findProductsByColor(color);
 
